@@ -67,6 +67,8 @@ public:
 	/*
 	 * Constructor.
 	 */
+	ScoringMatrix(){}
+
 	ScoringMatrix(char *filepath) {
 		importScoringMatrix(filepath);
 	}
