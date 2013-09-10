@@ -67,8 +67,6 @@ public:
 	/*
 	 * Constructor.
 	 */
-	ScoringMatrix(){}
-
 	ScoringMatrix(char *filepath) {
 		importScoringMatrix(filepath);
 	}
@@ -110,14 +108,13 @@ public:
 
 			fscanf(file, "%d;%d%*c", &gapOpenPenalty, &gapExtendPenalty);
 
-			while (fscanf(file, "%c;%c;%d%*c", &u, &v, &score) != EOF ) {
+			while (fscanf(file, "%c;%c;%d%*c", &u, &v, &score) != EOF) {
 				matrix[getIndex(u)][getIndex(v)] = score;
 				matrix[getIndex(v)][getIndex(u)] = score;
 			}
 
 			fclose(file);
-		}
-		else{
+		} else {
 			printf("file not opened");
 		}
 	}

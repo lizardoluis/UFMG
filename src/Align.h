@@ -1,8 +1,7 @@
 #include "ScoringMatrix.h"
 #include <algorithm>
 #include <string>
-
-//https://code.google.com/p/himmele/source/browse/trunk/Bioinformatics/NeedlemanWunsch/src/NeedlemanWunsch.java
+#include <vector>
 
 using namespace std;
 
@@ -13,10 +12,10 @@ private:
 	string seqB;
 
 	//Scoring matrix
-	ScoringMatrix scoringMatrix;
+	ScoringMatrix *scoringMatrix;
 
 	//Similarity matrix
-	int **matrix;
+	vector<vector<int> > matrix;
 
 	//Alignment score
 	int score;
@@ -24,79 +23,116 @@ private:
 	//Aligned sequences
 	string alignedSeqA;
 	string alignedSeqB;
-	
+
+	//Aligns two sequences
+	void globalAlignment() {
+		int m = seqA.length();
+		int n = seqB.length();
+		int gap = scoringMatrix->getGapOpenPenalty();
+
+		for (int i = 0; i <= m; i++) {
+			matrix[i][0] = gap * i;
+		}
+		for (int j = 0; j <= n; j++) {
+			matrix[0][j] = gap * j;
+		}
+		for (int i = 1; i <= m; i++) {
+			for (int j = 1; j <= n; j++) {
+
+				int left = matrix[i][j - 1] + gap;
+				int up = matrix[i - 1][j] + gap;
+				int diag = matrix[i - 1][j - 1]
+						+ scoringMatrix->getScore(seqA[i - 1], seqB[j - 1]);
+
+//				cout << seqA[i - 1] << " " << seqB[j - 1] << endl;
+//				cout << "[" << i << "," << j << "] left: " << left << " up: "
+//						<< up << " diag: " << diag << endl;
+
+				matrix[i][j] = max(max(left, up), diag);
+			}
+		}
+
+		score = matrix[m][n];
+	}
+
+	//Parses the similarity matrix from back to front to design the path.
+	void backtrack() {
+		int i = seqA.length();
+		int j = seqB.length();
+		int gap = scoringMatrix->getGapOpenPenalty();
+
+		string sA("");
+		string sB("");
+
+		while (i > 0 && j > 0) {
+			if (matrix[i][j]
+					== matrix[i - 1][j - 1]
+							+ scoringMatrix->getScore(seqA[i - 1],
+									seqB[j - 1])) {
+				sA += seqA[i - 1];
+				sB += seqB[j - 1];
+				i--;
+				j--;
+				continue;
+			} else if (matrix[i][j] == matrix[i][j - 1] + gap) {
+				sA += "-";
+				sB += seqB[j - 1];
+				j--;
+				continue;
+			} else {
+				sA += seqA[i - 1];
+				sB += "-";
+				i--;
+				continue;
+			}
+		}
+
+		alignedSeqA = string(sA.rbegin(), sA.rend());
+		alignedSeqB = string(sB.rbegin(), sB.rend());
+	}
+
 public:
 
-	Align(char* sequenceA, char* sequenceB, ScoringMatrix sM) {
+	Align(char* sequenceA, char* sequenceB, ScoringMatrix * sM) {
 		seqA = sequenceA;
 		seqB = sequenceB;
 		scoringMatrix = sM;
+
+		matrix.resize(seqA.length() + 1);
+		for (int i = 0; i <= seqA.length(); ++i) {
+			matrix[i].resize(seqB.length() + 1);
+		}
 
 		globalAlignment();
 		backtrack();
 	}
 
-	void globalAlignment() {
-		int m = seqA.length();
-                int n = seqB.length();
-		int gap = scoringMatrix.getGapOpenPenalty();
-
-		for (int i = 0; i < m; i++) {
-			matrix[i][0] = i;
-		}
-		for (int j = 0; j < n; j++) {
-			matrix[0][j] = j;
-		}
-		for (int i = 0; i < m; i++) {
-			for (int j = 0; j < n; j++) {
-
-				int Insert = matrix[i][j - 1] + gap;
-				int Delete = matrix[i - 1][j] + gap;
-				int Match = matrix[i - 1][j - 1]
-						+ scoringMatrix.getScore(seqA[i - 1], 
-								seqB[j - 1]);
-
-				matrix[i][j] = max(max(Insert, Delete), Match);
-			}
-		}
-
-		score = matrix[m-1][n-1];
-	}
-
-	void backtrack() {
-		int i = seqA.length();
-                int j = seqB.length();
-
-		string sA ("");
-		string sB ("");
-          
-                while (i > 0 && j > 0) {                        
-                        if (matrix[i][j] == matrix[i-1][j-1] + scoringMatrix.getScore(seqA[i], seqB[j])) {                          
-                                sA += seqA[i-1];
-                                sB += seqB[j-1];
-                                i--;
-                                j--;                            
-                                continue;
-                        } else if (matrix[i][j] == matrix[i][j-1] - 1) {
-                                sA += "-";
-                                sB += seqB[j-1];
-                                j--;
-                                continue;
-                        } else {
-                                sA += seqA[i-1];
-                                sB += "-";
-                                i--;
-                                continue;
-                        }
-                }
-
-                alignedSeqA = string (sA.rbegin(), sA.rend());
-                alignedSeqB = string (sB.rbegin(), sB.rend());
-	}
-
 	void printScoreAndAlignments() {
-                printf("Score: %d\n", score);
-                printf("Sequence A: %s\n", alignedSeqA.c_str());
-                printf("Sequence B: %s\n", alignedSeqB.c_str());
-        }
+		printf("Score: %d\n", score);
+		printf("Sequence A: %s\n", alignedSeqA.c_str());
+		printf("Sequence B: %s\n", alignedSeqB.c_str());
+	}
+
+	void printMatrix() {
+		printf("D =\n");
+		for (int i = 0; i < seqA.length() + 1; i++) {
+			for (int j = 0; j < seqB.length() + 1; j++) {
+				printf("%4d ", matrix[i][j]);
+			}
+			printf("\n");
+		}
+		printf("\n");
+	}
+
+	int getScore() {
+		return score;
+	}
+
+	string getAlignedSeqA() {
+		return alignedSeqA;
+	}
+
+	string getAlignedSeqB() {
+		return alignedSeqA;
+	}
 };
