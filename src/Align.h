@@ -108,9 +108,29 @@ public:
 	}
 
 	void printScoreAndAlignments() {
-		printf("Score: %d\n", score);
-		printf("Sequence A: %s\n", alignedSeqA.c_str());
-		printf("Sequence B: %s\n", alignedSeqB.c_str());
+		
+		string diff;
+		int len = 60;
+
+		for(int i=0; i<alignedSeqA.length(); i++){
+			if(alignedSeqA[i] == alignedSeqB[i])
+				diff.push_back(alignedSeqA[i]);
+			else
+				diff.push_back(' ');
+		}
+
+		for(int i=0; i<alignedSeqA.length(); i+=len){
+			printf("Sequence A:\t %s %d\n", alignedSeqA.substr(i, len).c_str(), i+alignedSeqA.substr(i, len).length());
+			printf("\t\t %s\n", diff.substr(i, len).c_str());
+			printf("Sequence B:\t %s %d\n", alignedSeqB.substr(i, len).c_str(), i+alignedSeqA.substr(i, len).length());
+			printf("\n");
+		}		
+
+
+
+		//printf("Score: %d\n", score);
+		//printf("Sequence A: %s\n", alignedSeqA.c_str());
+		//printf("Sequence B: %s\n", alignedSeqB.c_str());
 	}
 
 	void printMatrix() {
