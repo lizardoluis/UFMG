@@ -25,17 +25,21 @@ int main() {
 	char fFilePath[] = "data/family.fasta";
 	map < string, string > families = importFamilies(fFilePath);
 
-
 	Align align(dTIM, YPIA, &sm);
-	align.printAlignment("dTIM", "2ypia");
+	//align.printAlignment("dTIM", "2ypia");
+    //align.printDiff();
 
-	cout << "----" << endl << "----" << endl << endl;
+	Align align2(YPIA, families["8TIMA"], &sm);
+	//align2.printAlignment("2YPIA", "8TIMA");
+    align2.printDiff();
 
-	for (set<string>::iterator it = familyIds.begin(); it != familyIds.end(); ++it) {
+	//cout << "----" << endl << "----" << endl << endl;
+
+	/*for (set<string>::iterator it = familyIds.begin(); it != familyIds.end(); ++it) {
 		Align align2(YPIA, families[*it], &sm);
 		align.printAlignment("2YPIA", *it);
 		cout << "----" << endl << endl;
-	}
+	}*/
 
 	return 0;
 }

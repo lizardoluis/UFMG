@@ -2,8 +2,12 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <map>
 
-#define LINE_BREAK 80
+#define LINE_BREAK 125
+#define DEL 0
+#define ADD 1
+#define MUT 2
 
 using namespace std;
 
@@ -69,4 +73,8 @@ public:
 	 * Returns a string that is the difference between the aligned sequences.
 	 */
 	string getDiffSeq();
+
+	map<int, int> getDiff();
+
+    void printDiff();
 };

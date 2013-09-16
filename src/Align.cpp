@@ -84,10 +84,10 @@ void Align::printAlignment(string seqAName, string seqBName) {
 
 	for (int i = 0; i < alignedSeqA.length(); i += LINE_BREAK) {
 		printf("%s:\t %s %ld\n", seqAName.c_str(), alignedSeqA.substr(i, LINE_BREAK).c_str(),
-				i + alignedSeqA.substr(i, LINE_BREAK).length());
+				i + (long int)alignedSeqA.substr(i, LINE_BREAK).length());
 		printf("\t %s\n", diff.substr(i, LINE_BREAK).c_str());
 		printf("%s:\t %s %ld\n", seqBName.c_str(), alignedSeqB.substr(i, LINE_BREAK).c_str(),
-				i + alignedSeqA.substr(i, LINE_BREAK).length());
+				i + (long int)alignedSeqA.substr(i, LINE_BREAK).length());
 		printf("\n");
 	}
 }
@@ -112,7 +112,7 @@ string Align::getAlignedSeqA() {
 }
 
 string Align::getAlignedSeqB() {
-	return alignedSeqA;
+	return alignedSeqB;
 }
 
 string Align::getDiffSeq() {
@@ -126,4 +126,33 @@ string Align::getDiffSeq() {
 	}
 
 	return diff;
+}
+
+map<int, int> Align::getDiff() {
+	map<int, int> diff;
+
+	for (int i = 0; i < alignedSeqA.length(); i++) {
+		if (alignedSeqA[i] != alignedSeqB[i]) {
+            if (alignedSeqA[i] == '-')
+                diff[i] = DEL;
+            else if (alignedSeqB[i] == '-')
+                diff[i] = ADD;
+            else 
+                diff[i] = MUT;
+        }
+	}
+
+	return diff;
+}
+
+void Align::printDiff() {
+    map<int, int> diff = getDiff();
+
+    for (map<int, int>::iterator it = diff.begin(); it != diff.end(); it++) {
+        cout << it->first << ": ";
+        if (it->second == ADD) cout << "ADD";
+        else if (it->second == DEL) cout << "DEL";
+        else cout << "MUT";
+        cout << ": " << getAlignedSeqA()[it->first] << " " << getAlignedSeqB()[it->first] << endl;
+    }
 }
