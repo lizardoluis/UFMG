@@ -25,21 +25,40 @@ int main() {
 	char fFilePath[] = "data/family.fasta";
 	map < string, string > families = importFamilies(fFilePath);
 
-	Align align(dTIM, YPIA, &sm);
-	//align.printAlignment("dTIM", "2ypia");
+    map<int, map<string, int> > statistic;
+
+	Align align(YPIA, dTIM, &sm);
+    map<int, int> diff = align.getDiff();
+	//align.printAlignment("2ypia", "dTIM");
     //align.printDiff();
 
-	Align align2(YPIA, families["8TIMA"], &sm);
-	//align2.printAlignment("2YPIA", "8TIMA");
-    align2.printDiff();
+    string aminA, aminB;
 
 	//cout << "----" << endl << "----" << endl << endl;
+    cout << familyIds.size() << endl << endl;
 
-	/*for (set<string>::iterator it = familyIds.begin(); it != familyIds.end(); ++it) {
-		Align align2(YPIA, families[*it], &sm);
-		align.printAlignment("2YPIA", *it);
-		cout << "----" << endl << endl;
-	}*/
+	for (set<string>::iterator it = familyIds.begin(); it != familyIds.end(); ++it) {
+		Align align2(families[*it], dTIM, &sm);
+        map<int, int> diff2 = align2.getDiff();
+		//align2.printAlignment("2YPIA", *it);
+		//cout << "----" << endl << endl;
+
+        for (map<int, int>::iterator it = diff.begin(); it != diff.end(); it++) {
+            if (diff2[it->first] == DEL || diff2[it->first] == ADD || diff2[it->first] == MUT) {
+                aminA = align2.getAlignedSeqA()[it->first];
+                aminB = align2.getAlignedSeqB()[it->first];
+                statistic[it->first][aminA + aminB] += 1;
+            }
+        }
+	}
+
+    for (map<int, map<string, int> >::iterator it = statistic.begin(); it != statistic.end(); it++) {
+        cout << it->first << ": ";
+        for (map<string, int>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+            cout << it2->first << "(" << it2->second << ") ";
+        }
+        cout << endl;
+    }
 
 	return 0;
 }

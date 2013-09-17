@@ -60,6 +60,18 @@ void Align::backtrack() {
 		}
 	}
 
+    if (i != 0 || j != 0) {
+        if (i == 0) {
+            while (j > 0) {
+               sA += '-'; sB += seqB[--j];
+            }
+        } else if (j == 0) {
+            while (i > 0) {
+               sB += '-'; sA += seqA[--i];
+            }
+        }
+    }
+
 	alignedSeqA = string(sA.rbegin(), sA.rend());
 	alignedSeqB = string(sB.rbegin(), sB.rend());
 }
@@ -134,9 +146,9 @@ map<int, int> Align::getDiff() {
 	for (int i = 0; i < alignedSeqA.length(); i++) {
 		if (alignedSeqA[i] != alignedSeqB[i]) {
             if (alignedSeqA[i] == '-')
-                diff[i] = DEL;
-            else if (alignedSeqB[i] == '-')
                 diff[i] = ADD;
+            else if (alignedSeqB[i] == '-')
+                diff[i] = DEL;
             else 
                 diff[i] = MUT;
         }

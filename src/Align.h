@@ -4,10 +4,10 @@
 #include <vector>
 #include <map>
 
-#define LINE_BREAK 125
-#define DEL 0
-#define ADD 1
-#define MUT 2
+#define LINE_BREAK 126
+#define DEL 1
+#define ADD 2
+#define MUT 3
 
 using namespace std;
 
@@ -74,6 +74,9 @@ public:
 	 */
 	string getDiffSeq();
 
+    /*
+     * Returns a map with the difference points between the aligned sequences 
+     */
 	map<int, int> getDiff();
 
     void printDiff();
