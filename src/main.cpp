@@ -86,7 +86,7 @@ int main() {
         }
 	}
 
-    for (map<int, map<string, int> >::iterator it = statistic.begin(); it != statistic.end(); it++) {
+    /*for (map<int, map<string, int> >::iterator it = statistic.begin(); it != statistic.end(); it++) {
         cout << it->first << ": ";
         for (map<string, int>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
             cout << it2->first << "(" << it2->second << ") ";
@@ -94,13 +94,17 @@ int main() {
         cout << endl;
     }
 
-    cout << "----" << endl << endl;
-    int total, count;
+    cout << "----" << endl << endl;*/
+    int total, count, count2;
+    char sg;
+
+    printf("\"mutation\",\"equal\",\"group\",\"total\",\"equal(%%)\",\"group(%%)\",\"same group\"\n");
 
     for (map<int, int>::iterator it = diff.begin(); it != diff.end(); it++) {
-        total = count = 0;
+        total = count = count2 = 0;
         aminA = align.getAlignedSeqA()[it->first];
         aminB = align.getAlignedSeqB()[it->first];
+        sg = aminoGroups[aminA[0]] == aminoGroups[aminB[0]] ? 'Y' : 'N';
 
         for (map<string, int>::iterator it2 = statistic[it->first].begin(); it2 != statistic[it->first].end(); it2++) {
             total += it2->second;
@@ -108,10 +112,17 @@ int main() {
             if (aminA + aminB == it2->first) {
                 count = it2->second;
             }
+
+            if (diff[it->first] == MUT
+                && aminoGroups[aminA[0]] == aminoGroups[it2->first[0]]
+                && aminoGroups[aminB[0]] == aminoGroups[it2->first[1]]
+            ) {
+                count2 += it2->second;
+            }
         }
 
-        cout << aminA + aminB << " " << count << "/";
-        printf("%d = %.2f %%\n", total, (float)count*100/total);
+        cout << aminA + aminB << "," << count << "," << count2 << "," << total << ",";
+        printf("%.4f,%.4f,%c\n", (float)count/total, (float)count2/total, sg);
     }
 
 	return 0;

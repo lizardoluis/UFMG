@@ -165,6 +165,6 @@ void Align::printDiff() {
         if (it->second == ADD) cout << "ADD";
         else if (it->second == DEL) cout << "DEL";
         else cout << "MUT";
-        cout << ": " << getAlignedSeqA()[it->first] << " " << getAlignedSeqB()[it->first] << endl;
+        cout << ": " << getAlignedSeqA()[it->first] << getAlignedSeqB()[it->first] << endl;
     }
 }
