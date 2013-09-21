@@ -122,7 +122,7 @@ int main() {
         }
 
         cout << aminA + aminB << "," << count << "," << count2 << "," << total << ",";
-        printf("%.4f,%.4f,%c\n", (float)count/total, (float)count2/total, sg);
+        printf("\"%.4f\",\"%.4f\",%c\n", (float)count/total, (float)count2/total, sg);
     }
 
 	return 0;
