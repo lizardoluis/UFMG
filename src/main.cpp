@@ -40,7 +40,7 @@ void initGroups(map<char, int> *groups) {
 
 int main() {
 
-	char smFilepath[] = "data/PAM60.txt";
+	char smFilepath[] = "data/PAM250.txt";
 	ScoringMatrix sm(smFilepath);
 
 	char idsFilePath[] = "data/idsFamily.txt";
