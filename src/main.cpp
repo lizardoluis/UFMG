@@ -40,7 +40,7 @@ void initGroups(map<char, int> *groups) {
 
 int main() {
 
-	char smFilepath[] = "data/ScoringMatrix.txt";
+	char smFilepath[] = "data/PAM60.txt";
 	ScoringMatrix sm(smFilepath);
 
 	char idsFilePath[] = "data/idsFamily.txt";
@@ -62,7 +62,7 @@ int main() {
 
 	Align align(YPIA, dTIM, &sm);
     map<int, int> diff = align.getDiff();
-	//align.printAlignment("2ypia", "dTIM");
+//	align.printAlignment("2ypia", "dTIM");
     //align.printDiff();
 
     string aminA, aminB, aminC, aminD;
