@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-#define LINE_BREAK 100
+#define LINE_BREAK 80
 #define DEL 1
 #define ADD 2
 #define MUT 3
