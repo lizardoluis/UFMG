@@ -40,6 +40,8 @@ void initGroups(map<char, int> *groups) {
 
 int main() {
 
+	//char smFilepath[] = "data/PAM60.txt";
+	//char smFilepath[] = "data/PAM120.txt";
 	char smFilepath[] = "data/PAM250.txt";
 	ScoringMatrix sm(smFilepath);
 
@@ -62,13 +64,12 @@ int main() {
 
 	Align align(YPIA, dTIM, &sm);
     map<int, int> diff = align.getDiff();
-//	align.printAlignment("2ypia", "dTIM");
+	align.printAlignment("2ypia", "dTIM");
     //align.printDiff();
 
     string aminA, aminB, aminC, aminD;
 
 	//cout << "----" << endl << "----" << endl << endl;
-    //cout << familyIds.size() << endl << endl;
 
 	for (set<string>::iterator it = familyIds.begin(); it != familyIds.end(); ++it) {
 		Align align2(YPIA, families[*it], &sm);
@@ -86,19 +87,12 @@ int main() {
         }
 	}
 
-    /*for (map<int, map<string, int> >::iterator it = statistic.begin(); it != statistic.end(); it++) {
-        cout << it->first << ": ";
-        for (map<string, int>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
-            cout << it2->first << "(" << it2->second << ") ";
-        }
-        cout << endl;
-    }
-
-    cout << "----" << endl << endl;*/
     int total, count, count2;
     char sg;
 
-    printf("\"mutation\",\"equal\",\"group\",\"total\",\"equal(%%)\",\"group(%%)\",\"same group\"\n");
+    //printf("\"mutation\",\"equal\",\"group\",\"total\",\"equal(%%)\",\"group(%%)\",\"same group\"\n");
+    printf("***** MUTAÇÕES QUE ALTERAM A FUNÇÃO *****\n\n");
+    printf("%-10s %-15s %-10s\n", "Tipo", "Alteração", "Posição");
 
     for (map<int, int>::iterator it = diff.begin(); it != diff.end(); it++) {
         total = count = count2 = 0;
@@ -121,8 +115,20 @@ int main() {
             }
         }
 
-        cout << aminA + aminB << "," << count << "," << count2 << "," << total << ",";
-        printf("\"%.4f\",\"%.4f\",%c\n", (float)count/total, (float)count2/total, sg);
+        if (count2 == 0 && sg == 'N') {
+            if (diff[it->first] == MUT) {
+                //cout << "Mutação " << aminA + aminB << " " << it->first << endl;
+                printf("%-12s %c -> %c %6s %d\n", "Mutação", aminA[0], aminB[0], " ", it->first);
+            } else if (diff[it->first] == DEL) {
+                //cout << "Deleção " << aminA << " " << it->first << endl;
+                printf("%-12s %-13c %-8d\n", "Deleção", aminA[0], it->first);
+            } else {
+                //cout << "Adição " << aminB << " " << it->first << endl;
+                printf("%-12s %-13c %-8d\n", "Adição", aminB[0], it->first);
+            }
+        }
+        //cout << aminA + aminB << "," << count << "," << count2 << "," << total << ",";
+        //printf("\"%.4f\",\"%.4f\",%c\n", (float)count/total, (float)count2/total, sg);
     }
 
 	return 0;
