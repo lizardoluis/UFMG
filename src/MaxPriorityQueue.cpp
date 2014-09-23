@@ -9,44 +9,56 @@
 
 #include <iostream>
 
-MaxPriorityQueue::MaxPriorityQueue(vector<float> a) {
+int MaxPriorityQueue::parent(int i) {
+	return (i - 1) / 2;
+}
 
-	this->a.resize(a.size());
-	this->index.resize(a.size());
-	for (int i = 0; i < (int) a.size(); i++) {
-		this->a[i] = make_pair(a[i], i);
+int MaxPriorityQueue::left(int i) {
+	return 2 * i + 1;
+}
+
+int MaxPriorityQueue::right(int i) {
+	return 2 * i + 2;
+}
+
+MaxPriorityQueue::MaxPriorityQueue(vector<float> v) {
+
+	this->a.resize(v.size());
+	this->index.resize(v.size());
+
+	for (unsigned i = 0; i < v.size(); i++) {
+		this->a[i] = make_pair(v[i], i);
 		this->index[i] = i;
 	}
 
 	// build max heap
-	for (int i = a.size() / 2; i >= 0; i--) {
+	for (int i = a.size() / 2 - 1; i >= 0; i--) {
 		maxHeapify(i);
 	}
 }
 
 void MaxPriorityQueue::maxHeapify(int i) {
-	int l = 2 * i;
-	int r = 2 * i + 1;
-	int largest;
+	int l = left(i);
+	int r = right(i);
+	int largest = i;
 
-	if (l <= (int) a.size() && a[l].first > a[i].first) {
+	if (l < (int) a.size() && a[l].first > a[largest].first) {
 		largest = l;
-	} else {
-		largest = i;
 	}
 
-	if (r <= (int) a.size() && a[r].first > a[largest].first) {
+	if (r < (int) a.size() && a[r].first > a[largest].first) {
 		largest = r;
 	}
 
 	if (largest != i) {
 		// exchange a[i] with a[largest]
 		pair<float, int> tmp = a[i];
-		a[i] = a[largest];
-		a[largest] = tmp;
 
 		index[i] = largest;
 		index[largest] = i;
+
+		a[i] = a[largest];
+		a[largest] = tmp;
 
 		maxHeapify(largest);
 	}
@@ -59,11 +71,11 @@ pair<float, int> MaxPriorityQueue::extractMax() {
 	}
 
 	pair<float, int> max = a[0];
-	a[0] = a[a.size() - 1];
-	a.pop_back();
 
-	index[0] = index[a.size() - 1];
-	index.pop_back();
+	a[0] = a[a.size() - 1];
+	index[a[0].second] = 0;
+
+	a.pop_back();
 
 	maxHeapify(0);
 
@@ -80,14 +92,17 @@ bool MaxPriorityQueue::increaseKey(int i, float key) {
 	}
 
 	a[j].first = key;
-	while (j > 0 && a[j / 2].first < a[j].first) {
+	while (j > 0 && a[parent(j)].first < a[j].first) {
 
 		// exchange a[i] with a[parent(i)];
-		pair<float, int> tmp = a[j];
-		a[j] = a[j / 2];
-		a[j / 2] = tmp;
+		index[a[j].second] = parent(j);
+		index[a[parent(j)].second] = j;
 
-		j = j / 2;
+		pair<float, int> tmp = a[j];
+		a[j] = a[parent(j)];
+		a[parent(j)] = tmp;
+
+		j = parent(j);
 	}
 
 	return true;

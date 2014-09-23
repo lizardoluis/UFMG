@@ -10,6 +10,9 @@
 
 #include <queue>
 #include <vector>
+#include <limits>
+
+#include "MaxPriorityQueue.h"
 
 using namespace std;
 
@@ -31,6 +34,8 @@ public:
 	int nextAdj(int v, int a, EdgeData &data);
 
 	bool isConex();
+
+	float maximalSpanning(float rate);
 };
 
 #endif /* GRAPH_H_ */

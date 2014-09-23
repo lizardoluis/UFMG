@@ -20,10 +20,16 @@ private:
 
 	vector<int> index;
 
+	int parent(int i);
+
+	int left(int i);
+
+	int right(int i);
+
 	void maxHeapify(int i);
 
 public:
-	MaxPriorityQueue(vector<float> a);
+	MaxPriorityQueue(vector<float> v);
 
 	pair<float, int> extractMax();
 
