@@ -29,7 +29,7 @@ private:
 	void maxHeapify(int i);
 
 public:
-	MaxPriorityQueue(vector<float> v);
+	MaxPriorityQueue(vector<float> & v);
 
 	pair<float, int> extractMax();
 

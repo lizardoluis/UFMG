@@ -7,8 +7,6 @@
 
 #include "Graph.h"
 
-#include <iostream>
-
 Graph::Graph(int numNodes) {
 	this->numNodes = numNodes;
 	adjList.resize(numNodes);
@@ -70,14 +68,19 @@ float Graph::maximalSpanning(float ratio) {
 	vector<bool> inHeap(numNodes, true);
 	vector<int> predecessor(numNodes, -1);
 
-	keys[0] = 0.0;// numeric_limits<float>::max();
+	keys[0] = 0.0;
 
 	MaxPriorityQueue priorityQueue(keys);
 
+	// Prim's algorithm - max spanning tree
 	while (!priorityQueue.empty()) {
 		pair<float, int> u = priorityQueue.extractMax();
 		inHeap[u.second] = false;
-		weight += u.first;
+
+		// Add negative edges only if they are bridges
+		if(u.first < 0){
+			weight += u.first;
+		}
 
 		for (pair<int, EdgeData> edge : adjList[u.second]) {
 			int v = edge.first;
@@ -85,20 +88,16 @@ float Graph::maximalSpanning(float ratio) {
 
 			float key = eData.friendship - ratio * eData.distance;
 
+			// Add other positive edges to the maximal spanning graph
+			if(inHeap[v] && key > 0){
+				weight += key;
+			}
+
 			if (inHeap[v] && priorityQueue.increaseKey(v, key)) {
 				predecessor[v] = u.second;
 			}
 		}
 	}
-
-//	for (unsigned u = 0; u < keys.size(); u++)
-//		if (predecessor[u] != -1) {
-//			if (u < (unsigned) predecessor[u])
-//				printf("%d %d\n", u + 1, predecessor[u] + 1);
-//			else
-//				printf("%d %d\n", predecessor[u] + 1, u + 1);
-//		}
-//	printf("\n");
 
 	return weight;
 }

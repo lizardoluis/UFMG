@@ -9,68 +9,56 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <math.h>
 
 #include "Graph.h"
-#include "MaxPriorityQueue.h"
+
+#define COMPARE_FLOATS(x,y) (fabs((x) - (y)) < 0.0001)
 
 using namespace std;
 
 int main() {
 
-	int numUsers, u, v, f, d;
+	int numUsers;
 	string line;
 
 	while (scanf("%d\n", &numUsers) > 0) {
 
 		Graph graph(numUsers);
 
+		int u, v, f, d, fSum = 0;
+
 		while (getline(cin, line) && line.size() > 0) {
 			sscanf(line.c_str(), "%d %d %d %d", &u, &v, &f, &d);
 			graph.insert(u, v, f, d);
+			fSum += f;
 		}
 
-		if(graph.isConex()){
-			printf("%.3f\n", graph.maximalSpanning(111.33333));
-		}
-		else {
-			cout << "-1000\n";
-		}
+		if (graph.isConex()) {
 
-		break;
+			float upperBound = (float) fSum / (float) numUsers;
+			float lowerBound = 0;
+			float ratio = (lowerBound + upperBound) / 2;
+			float maxSpanning = graph.maximalSpanning(ratio);
+
+			while (COMPARE_FLOATS(maxSpanning, 0.0) == false) {
+
+				if (maxSpanning > 0){
+					lowerBound = ratio;
+				}
+				else if (maxSpanning < 0){
+					upperBound = ratio;
+				}
+
+				ratio = (lowerBound + upperBound) / 2;
+				maxSpanning = graph.maximalSpanning(ratio);
+			}
+
+			printf("%.3f\n", ratio);
+		} else {
+			printf("-1000\n");
+		}
 	}
-
-//	vector<float> v = { 0.0, -2.5, -0.5, -4.5, -1.5 };
-//
-//	MaxPriorityQueue maxPQ(v);
-//
-//	cout << endl << endl;
-//
-//	pair<float, int> pair;
-//
-//	pair = maxPQ.extractMax();
-//	cout << pair.first << " - " << pair.second << endl;
-//
-////	maxPQ.increaseKey(0, 3.8);
-//
-//	pair = maxPQ.extractMax();
-//	cout << pair.first << " - " << pair.second << endl;
-//
-//	pair = maxPQ.extractMax();
-//	cout << pair.first << " - " << pair.second << endl;
-//
-//	pair = maxPQ.extractMax();
-//	cout << pair.first << " - " << pair.second << endl;
-//
-//	pair = maxPQ.extractMax();
-//	cout << pair.first << " - " << pair.second << endl;
 
 	return 0;
 }
-
-/*
- 4.5 - 3
- 3.5 - 0
- 2.5 - 1
- 1.5 - 4
- 0.5 - 2
- * */

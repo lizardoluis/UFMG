@@ -7,8 +7,6 @@
 
 #include "MaxPriorityQueue.h"
 
-#include <iostream>
-
 int MaxPriorityQueue::parent(int i) {
 	return (i - 1) / 2;
 }
@@ -21,7 +19,7 @@ int MaxPriorityQueue::right(int i) {
 	return 2 * i + 2;
 }
 
-MaxPriorityQueue::MaxPriorityQueue(vector<float> v) {
+MaxPriorityQueue::MaxPriorityQueue(vector<float> & v) {
 
 	this->a.resize(v.size());
 	this->index.resize(v.size());
