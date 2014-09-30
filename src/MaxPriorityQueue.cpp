@@ -6,6 +6,7 @@
  */
 
 #include "MaxPriorityQueue.h"
+#include <iostream>
 
 int MaxPriorityQueue::parent(int i) {
 	return (i - 1) / 2;
@@ -19,18 +20,26 @@ int MaxPriorityQueue::right(int i) {
 	return 2 * i + 2;
 }
 
-MaxPriorityQueue::MaxPriorityQueue(vector<float> & v) {
+void MaxPriorityQueue::swap(int i, int j) {
+	index[weights[i].first] = j;
+	index[weights[j].first] = i;
 
-	this->a.resize(v.size());
-	this->index.resize(v.size());
+	pair<int, double> tmp = weights[i];
+	weights[i] = weights[j];
+	weights[j] = tmp;
+}
+
+MaxPriorityQueue::MaxPriorityQueue(vector<double> & v) {
+	index.resize(v.size());
+	weights.resize(v.size());
 
 	for (unsigned i = 0; i < v.size(); i++) {
-		this->a[i] = make_pair(v[i], i);
-		this->index[i] = i;
+		index[i] = i;
+		weights[i] = make_pair(i, v[i]);
 	}
 
 	// build max heap
-	for (int i = a.size() / 2 - 1; i >= 0; i--) {
+	for (int i = weights.size() / 2 - 1; i >= 0; i--) {
 		maxHeapify(i);
 	}
 }
@@ -40,72 +49,61 @@ void MaxPriorityQueue::maxHeapify(int i) {
 	int r = right(i);
 	int largest = i;
 
-	if (l < (int) a.size() && a[l].first > a[largest].first) {
+	if (l < (int) weights.size() && weights[l].second > weights[largest].second) {
 		largest = l;
 	}
 
-	if (r < (int) a.size() && a[r].first > a[largest].first) {
+	if (r < (int) weights.size() && weights[r].second > weights[largest].second) {
 		largest = r;
 	}
 
 	if (largest != i) {
-		// exchange a[i] with a[largest]
-		pair<float, int> tmp = a[i];
-
-		index[i] = largest;
-		index[largest] = i;
-
-		a[i] = a[largest];
-		a[largest] = tmp;
-
+		swap(i, largest);
 		maxHeapify(largest);
 	}
 }
 
-pair<float, int> MaxPriorityQueue::extractMax() {
-	if (a.size() < 1) {
+pair<int, double> MaxPriorityQueue::extractMax() {
+	if (weights.size() < 1) {
 		printf("Heap underflow\n");
 		return make_pair(-1.0, -1);
 	}
 
-	pair<float, int> max = a[0];
+	pair<int, double> max = weights[0];
 
-	a[0] = a[a.size() - 1];
-	index[a[0].second] = 0;
+	swap(0, weights.size() - 1);
 
-	a.pop_back();
+	weights.pop_back();
 
 	maxHeapify(0);
 
 	return max;
 }
 
-bool MaxPriorityQueue::increaseKey(int i, float key) {
+bool MaxPriorityQueue::increaseKey(int v, double key) {
 
-	int j = index[i];
-
-	if (key <= a[j].first) {
+	if (key <= weights[index[v]].second) {
 //		printf("New key is smaller than current key\n");
 		return false;
 	}
 
-	a[j].first = key;
-	while (j > 0 && a[parent(j)].first < a[j].first) {
+	if( index[v] == -1 ){
+		printf("V (%d) is not in the queue\n", v);
+		return false;
+	}
 
-		// exchange a[i] with a[parent(i)];
-		index[a[j].second] = parent(j);
-		index[a[parent(j)].second] = j;
+	weights[index[v]].second = key;
 
-		pair<float, int> tmp = a[j];
-		a[j] = a[parent(j)];
-		a[parent(j)] = tmp;
+	int i = index[v];
 
-		j = parent(j);
+	while (i > 0 && weights[parent(i)].second < weights[i].second) {
+		swap(i, parent(i));
+		i = parent(i);
 	}
 
 	return true;
 }
 
 bool MaxPriorityQueue::empty() {
-	return a.empty();
+	return weights.empty();
 }

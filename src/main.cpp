@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "Graph.h"
+#include "MaxPriorityQueue.h"
 
 #define COMPARE_FLOATS(x,y) (fabs((x) - (y)) < 0.0001)
 
@@ -26,27 +27,28 @@ int main() {
 
 		Graph graph(numUsers);
 
-		int u, v, f, d, fSum = 0;
+		int u, v, f, d, fSum = 0, eCount = 0;
 
 		while (getline(cin, line) && line.size() > 0) {
 			sscanf(line.c_str(), "%d %d %d %d", &u, &v, &f, &d);
 			graph.insert(u, v, f, d);
 			fSum += f;
+			eCount++;
 		}
 
 		if (graph.isConex()) {
 
-			float upperBound = (float) fSum / (float) numUsers;
-			float lowerBound = 0;
-			float ratio = (lowerBound + upperBound) / 2;
-			float maxSpanning = graph.maximalSpanning(ratio);
+			double upperBound = (double) fSum / (double) eCount;
+			double lowerBound = 0;
+			double ratio = (lowerBound + upperBound) / 2;
 
-			while (COMPARE_FLOATS(maxSpanning, 0.0) == false) {
+			double maxSpanning = graph.maximalSpanning(ratio);
 
-				if (maxSpanning > 0){
+			while (COMPARE_FLOATS(maxSpanning, 0.000) == false) {
+
+				if (maxSpanning > 0) {
 					lowerBound = ratio;
-				}
-				else if (maxSpanning < 0){
+				} else if (maxSpanning < 0) {
 					upperBound = ratio;
 				}
 

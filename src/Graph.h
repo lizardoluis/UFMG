@@ -35,7 +35,7 @@ public:
 
 	bool isConex();
 
-	float maximalSpanning(float rate);
+	double maximalSpanning(double rate);
 };
 
 #endif /* GRAPH_H_ */

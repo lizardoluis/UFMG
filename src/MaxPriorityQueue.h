@@ -16,7 +16,9 @@ using namespace std;
 class MaxPriorityQueue {
 private:
 
-	vector<pair<float, int> > a;
+	int heapSize;
+
+	vector<pair<int, double> > weights;
 
 	vector<int> index;
 
@@ -28,12 +30,14 @@ private:
 
 	void maxHeapify(int i);
 
+	void swap(int a, int b);
+
 public:
-	MaxPriorityQueue(vector<float> & v);
+	MaxPriorityQueue(vector<double> & v);
 
-	pair<float, int> extractMax();
+	pair<int, double> extractMax();
 
-	bool increaseKey(int i, float key);
+	bool increaseKey(int v, double key);
 
 	bool empty();
 };

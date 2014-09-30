@@ -6,6 +6,7 @@
  */
 
 #include "Graph.h"
+#include <iostream>
 
 Graph::Graph(int numNodes) {
 	this->numNodes = numNodes;
@@ -60,11 +61,11 @@ bool Graph::isConex() {
 	return true;
 }
 
-float Graph::maximalSpanning(float ratio) {
+double Graph::maximalSpanning(double ratio) {
 
-	float weight = 0.0;
+	double weight = 0.0;
 
-	vector<float> keys(numNodes, -numeric_limits<float>::max());
+	vector<double> keys(numNodes, -numeric_limits<double>::max());
 	vector<bool> inHeap(numNodes, true);
 	vector<int> predecessor(numNodes, -1);
 
@@ -74,27 +75,27 @@ float Graph::maximalSpanning(float ratio) {
 
 	// Prim's algorithm - max spanning tree
 	while (!priorityQueue.empty()) {
-		pair<float, int> u = priorityQueue.extractMax();
-		inHeap[u.second] = false;
+		pair<int, double> u = priorityQueue.extractMax();
+		inHeap[u.first] = false;
 
 		// Add negative edges only if they are bridges
-		if(u.first < 0){
-			weight += u.first;
+		if (u.second < 0) {
+			weight += u.second;
 		}
 
-		for (pair<int, EdgeData> edge : adjList[u.second]) {
+		for (pair<int, EdgeData> edge : adjList[u.first]) {
 			int v = edge.first;
 			EdgeData eData = edge.second;
 
-			float key = eData.friendship - ratio * eData.distance;
+			double key = eData.friendship - ratio * (double)eData.distance;
 
 			// Add other positive edges to the maximal spanning graph
-			if(inHeap[v] && key > 0){
+			if (inHeap[v] && key > 0) {
 				weight += key;
 			}
 
 			if (inHeap[v] && priorityQueue.increaseKey(v, key)) {
-				predecessor[v] = u.second;
+				predecessor[v] = u.first;
 			}
 		}
 	}
