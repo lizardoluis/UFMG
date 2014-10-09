@@ -41,18 +41,15 @@ int main(int argc, char *argv[]) {
 
 	SCC scc(graph, graphT);
 
-	list< list<int> > components = scc.kosaraju();
+	list<int> sccComponent = scc.kosaraju();
 
-	for(list<int> c : components){
-		for(int u : c){
-			printf("%d ", u+1);
-		}
-		printf("\n");
+	for (int u : sccComponent) {
+		printf("%d ", u + 1);
 	}
 
 	printf("\n\n\n");
 
-	scc.tarjan();
+//	scc.tarjan();
 
 	return 0;
 }

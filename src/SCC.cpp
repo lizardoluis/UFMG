@@ -17,36 +17,31 @@ SCC::SCC(Graph &graph, Graph &graphT) {
 	this->graphT = &graphT;
 }
 
-void SCC::dfs() {
+void SCC::dfs(int node) {
 
-	int graphSize = graph->getSize();
-	int time = 0;
 	stack<int> nodesStack;
-	vector<int> finishTime(graphSize);
-	vector<bool> discovered(graphSize, false);
+	vector<bool> discovered(graph->getSize(), false);
 
-	for (int i = 0; i < graphSize; i++) {
-		if (!discovered[i]) {
-			nodesStack.push(i);
+	if (!discovered[node]) {
+		nodesStack.push(node);
 
-			while (!nodesStack.empty()) {
-				int u = nodesStack.top();
-				nodesStack.pop();
+		while (!nodesStack.empty()) {
+			int u = nodesStack.top();
+			nodesStack.pop();
+
+			if (!discovered[u]) {
 				discovered[u] = true;
-
 				list<int> adjList = graph->getAdjList(u);
 				for (int v : adjList) {
-					if (!discovered[v]) {
-						nodesStack.push(v);
-					}
+
+					nodesStack.push(v);
 				}
-				finishTime[u] = time++;
 			}
 		}
 	}
 }
 
-list<list<int> > SCC::kosaraju() {
+list<int> SCC::kosaraju() {
 
 	stack<int> kosarajuStack;
 	stack<int> dfsStack;
@@ -87,7 +82,7 @@ list<list<int> > SCC::kosaraju() {
 	 * these vertices from the graph G and the stack S.
 	 */
 	vector<bool> visited(graphT->getSize(), false);
-	list<list<int> > scc;
+	list<int> scc;
 
 	while (!kosarajuStack.empty()) {
 
@@ -116,14 +111,17 @@ list<list<int> > SCC::kosaraju() {
 					}
 				}
 			}
-			scc.push_back(component);
+
+			if (component.size() > scc.size()) {
+				scc = component;
+			}
 		}
 	}
 
 	return scc;
 }
 
-list<list<int> > SCC::tarjan() {
+list<int> SCC::tarjan() {
 
 	int id = 0;
 	vector<int> index(graph->getSize(), -1);
@@ -138,8 +136,8 @@ list<list<int> > SCC::tarjan() {
 		}
 	}
 
-	list<list<int> > scc;
-	return scc;
+	list<int> component;
+	return component;
 }
 
 void SCC::strongConnect(int v, int &id, vector<int> &index,
