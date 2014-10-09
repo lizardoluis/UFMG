@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-Graph::Graph(){
+Graph::Graph() {
 	size = 0;
 	adjList.reserve(100);
 }
@@ -25,7 +25,7 @@ void Graph::insert(int u, int v) {
 
 	biggestNode = u > v ? u : v;
 
-	if(biggestNode > size){
+	if (biggestNode > size) {
 		adjList.resize(biggestNode);
 		size = biggestNode;
 	}
@@ -33,19 +33,19 @@ void Graph::insert(int u, int v) {
 	adjList[u - 1].push_back(v - 1);
 }
 
-list<int> & Graph::getAdjList(int v){
+list<int> & Graph::getAdjList(int v) {
 	return adjList[v];
 }
 
-int Graph::getSize(){
+int Graph::getSize() {
 	return size;
 }
 
-void Graph::print(){
-	for(int i=0; i<size; i++){
-		cout << i+1 << ": ";
-		for(int j : adjList[i]){
-			cout << j+1 << " ";
+void Graph::print() {
+	for (int i = 0; i < size; i++) {
+		cout << i + 1 << ": ";
+		for (int j : adjList[i]) {
+			cout << j + 1 << " ";
 		}
 		cout << endl;
 	}

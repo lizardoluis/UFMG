@@ -16,7 +16,9 @@ using namespace std;
 
 class Graph {
 private:
+
 	int size;
+
 	vector<list<int> > adjList;
 
 public:

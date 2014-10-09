@@ -41,12 +41,12 @@ void SCC::dfs(int node) {
 	}
 }
 
-list<int> SCC::kosaraju() {
+list<int> SCC::kosaraju(Graph &graph, Graph &graphT) {
 
 	stack<int> kosarajuStack;
 	stack<int> dfsStack;
 
-	vector<bool> discovered(graph->getSize(), false);
+	vector<bool> discovered(graph.getSize(), false);
 
 	/*
 	 * Choose an arbitrary vertex v not in S. Perform a depth-first search
@@ -55,7 +55,7 @@ list<int> SCC::kosaraju() {
 	 *
 	 * DFS graph
 	 */
-	for (int i = 0; i < graph->getSize(); i++) {
+	for (int i = 0; i < graph.getSize(); i++) {
 		if (!discovered[i]) {
 			dfsStack.push(i);
 
@@ -65,7 +65,7 @@ list<int> SCC::kosaraju() {
 
 				if (!discovered[u]) {
 					discovered[u] = true;
-					list<int> adjList = graph->getAdjList(u);
+					list<int> adjList = graph.getAdjList(u);
 					for (int v : adjList) {
 						dfsStack.push(v);
 					}
@@ -81,7 +81,7 @@ list<int> SCC::kosaraju() {
 	 * strongly connected component containing v; record this and remove all
 	 * these vertices from the graph G and the stack S.
 	 */
-	vector<bool> visited(graphT->getSize(), false);
+	vector<bool> visited(graphT.getSize(), false);
 	list<int> scc;
 
 	while (!kosarajuStack.empty()) {
@@ -105,7 +105,7 @@ list<int> SCC::kosaraju() {
 					visited[u] = true;
 					component.push_back(u);
 
-					list<int> adjList = graphT->getAdjList(u);
+					list<int> adjList = graphT.getAdjList(u);
 					for (int v : adjList) {
 						dfsStack.push(v);
 					}

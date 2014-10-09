@@ -7,49 +7,69 @@
 //============================================================================
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
+#include <list>
+#include <stack>
 #include "Graph.h"
-#include "SCC.h"
+#include "WebClassifier.h"
+#include "TimeProfiler.h"
 
-#define DISCONNECTED_FILE "disconnected.txt" //disconnected nodes.
-#define IN_FILE "in.txt" //IN nodes.
-#define SCC_FILE "scc.txt" //nodes in the largest strongly connected component.
-#define SCC_OUT "out.txt" //OUT nodes.
-#define TENDRILS_A_FILE "tendrils_a.txt" //tendrils nodes of types (a).
-#define TENDRILS_B_FILE "tendrils_b.txt" //tendrils nodes of types (b).
-#define TENDRILS_C_FILE "tendrils_c.txt" //tendrils
+#define BUFFSZ 200
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
-
-	string fileName = argv[1];
+void read_input(string &fileName, Graph &graph, Graph &graphT) {
 	FILE *fp = fopen(fileName.c_str(), "r");
+	if (fp == NULL) {
+		printf("Error when opening the file.");
+		exit(0);
+	}
 
 	int u, v;
 
-	Graph graph;
-	Graph graphT;
-
 	// Read the list of nodes in the file and add them to the graph
-	while (fscanf(fp, "%d %d", &u, &v) == 2) {
-		graph.insert(u, v);
-		graphT.insert(v, u);
+	char buff[BUFFSZ];
+	while (fgets(buff, BUFFSZ, fp)) {
+		if (buff[0] != '#') {
+			sscanf(buff, "%d %d", &u, &v);
+			graph.insert(u, v);
+			graphT.insert(v, u);
+		}
 	}
 
 	fclose(fp);
+}
 
-	SCC scc(graph, graphT);
+int main(int argc, char *argv[]) {
 
-	list<int> sccComponent = scc.kosaraju();
+	TimeProfiler time;
+	time.start();
 
-	for (int u : sccComponent) {
-		printf("%d ", u + 1);
-	}
+	string fileName = argv[1];
+	Graph graph, graphT;
+	int scc;
+	list<int> sccList, out, in, tendrilsA, tendrilsB;
 
-	printf("\n\n\n");
+	read_input(fileName, graph, graphT);
 
-//	scc.tarjan();
+	WebClassifier web(graph.getSize());
+
+	scc = web.classify_SCC(graph, graphT);
+	sccList.push_back(scc);
+
+	web.classify_Component(graph, sccList, out, WebClassifier::OUT);
+	web.classify_Component(graphT, sccList, in, WebClassifier::IN);
+	web.classify_Component(graph, in, tendrilsA, WebClassifier::TENDRILS_A);
+	web.classify_Component(graphT, tendrilsA, tendrilsA,
+			WebClassifier::TENDRILS_A);
+	web.classify_Component(graphT, out, tendrilsB, WebClassifier::TENDRILS_B);
+	web.classify_Component(graphT, tendrilsB, tendrilsB,
+			WebClassifier::TENDRILS_B);
+
+	web.print_components();
+
+	printf("Execution Time: %g\n", time.reportTime());
 
 	return 0;
 }

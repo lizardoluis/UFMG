@@ -25,7 +25,7 @@ private:
 public:
 	SCC(Graph &graph, Graph &graphT);
 
-	list<int> kosaraju();
+	list<int> kosaraju(Graph &graph, Graph &graphT);
 
 	list<int> tarjan();
 
