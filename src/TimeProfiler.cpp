@@ -7,6 +7,10 @@
 
 #include "TimeProfiler.h"
 
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <cstdio>
+
 double TimeProfiler::calcTime() {
 	double utime, stime;
 	struct rusage resources;

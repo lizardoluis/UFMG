@@ -7,16 +7,18 @@
 
 #include "WebClassifier.h"
 
+#include <cstdio>
+#include <queue>
+#include <stack>
+
 WebClassifier::WebClassifier(int webSize) {
 	nodesType.resize(webSize, DISCONNECTED);
 }
 
-int WebClassifier::classify_SCC(Graph &graph, Graph &graphT) {
+int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 
 	list<int> scc;
-	stack<int> kosarajuStack;
-	stack<int> dfsStack;
-
+	stack<int> S, dfsStack;
 	vector<bool> discovered(graph.getSize(), false);
 
 	/*
@@ -32,15 +34,19 @@ int WebClassifier::classify_SCC(Graph &graph, Graph &graphT) {
 
 			while (!dfsStack.empty()) {
 				int u = dfsStack.top();
-				dfsStack.pop();
-
-				if (!discovered[u]) {
+				if (discovered[u]) {
+					dfsStack.pop();
+					S.push(u);
+					continue;
+				} else {
 					discovered[u] = true;
 					list<int> adjList = graph.getAdjList(u);
 					for (int v : adjList) {
-						dfsStack.push(v);
+						if (!discovered[v]) {
+							dfsStack.push(v);
+						}
 					}
-					kosarajuStack.push(u);
+
 				}
 			}
 		}
@@ -54,12 +60,12 @@ int WebClassifier::classify_SCC(Graph &graph, Graph &graphT) {
 	 */
 	vector<bool> visited(graphT.getSize(), false);
 
-	while (!kosarajuStack.empty()) {
+	while (!S.empty()) {
 
 		list<int> component;
 
-		int w = kosarajuStack.top();
-		kosarajuStack.pop();
+		int w = S.top();
+		S.pop();
 
 		if (!visited[w]) {
 			/*
@@ -88,21 +94,24 @@ int WebClassifier::classify_SCC(Graph &graph, Graph &graphT) {
 		}
 	}
 
+	// Set the nodes type to SCC
 	for (int i : scc) {
 		nodesType[i] = SCC;
 	}
 
+	// Returns one node of the SCC
 	return scc.front();
 }
 
-void WebClassifier::classify_Component(Graph &graph, list<int> &startComponent,
-		list<int> &component, Type setType) {
+void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
+		list<int> &nodesList, Type setType) {
 
 	list<int> scc;
 	stack<int> nStack;
 	vector<bool> visited(graph.getSize(), false);
 
-	for (int startNode : startComponent) {
+	// DFS
+	for (int startNode : startNodes) {
 		if (!visited[startNode]) {
 			nStack.push(startNode);
 
@@ -113,15 +122,29 @@ void WebClassifier::classify_Component(Graph &graph, list<int> &startComponent,
 				if (!visited[u]) {
 					visited[u] = true;
 
+					// if node is not classified, classify it as setType
 					if (nodesType[u] == DISCONNECTED) {
 						scc.push_back(u);
 						nodesType[u] = setType;
 					}
-					else if (setType == TENDRILS_A && nodesType[u] == TENDRILS_B) {
-						nodesType[u] = TENDRILS_C;
+					else if(setType == TENDRILS_A){
+						// Avoid the SCC or OUT nodes in the DFS of the undirected graph.
+						if(nodesType[u] == SCC || nodesType[u] == OUT){
+							continue;
+						}
+						else if(nodesType[u] == TENDRILS_B){
+							nodesType[u] = TENDRILS_C;
+						}
 					}
-					else if(setType == TENDRILS_B && nodesType[u] == TENDRILS_A) {
-						nodesType[u] = TENDRILS_C;
+					else if(setType == TENDRILS_B){
+						// Avoid the SCC or IN nodes in the DFS of the undirected graph.
+						if (nodesType[u] == SCC || nodesType[u] == IN) {
+							continue;
+						}
+						// Classify it as Tendrils-C
+						else if (nodesType[u] == TENDRILS_A){
+							nodesType[u] = TENDRILS_C;
+						}
 					}
 
 					list<int> adjList = graph.getAdjList(u);
@@ -133,10 +156,10 @@ void WebClassifier::classify_Component(Graph &graph, list<int> &startComponent,
 		}
 	}
 
-	component = scc;
+	nodesList = scc;
 }
 
-void WebClassifier::print_components() {
+void WebClassifier::export_components() {
 	FILE *fpSCC = fopen(SCC_FILE, "w");
 	FILE *fpIn = fopen(IN_FILE, "w");
 	FILE *fpOut = fopen(OUT_FILE, "w");
@@ -148,25 +171,25 @@ void WebClassifier::print_components() {
 	for (unsigned i = 0; i < nodesType.size(); i++) {
 		switch (nodesType[i]) {
 		case SCC:
-			fprintf(fpSCC, "%d\n", i + 1);
+			fprintf(fpSCC, "%d\n", i);
 			break;
 		case IN:
-			fprintf(fpIn, "%d\n", i + 1);
+			fprintf(fpIn, "%d\n", i);
 			break;
 		case OUT:
-			fprintf(fpOut, "%d\n", i + 1);
+			fprintf(fpOut, "%d\n", i);
 			break;
 		case TENDRILS_A:
-			fprintf(fpTendrilsA, "%d\n", i + 1);
+			fprintf(fpTendrilsA, "%d\n", i);
 			break;
 		case TENDRILS_B:
-			fprintf(fpTendrilsB, "%d\n", i + 1);
+			fprintf(fpTendrilsB, "%d\n", i);
 			break;
 		case TENDRILS_C:
-			fprintf(fpTendrilsC, "%d\n", i + 1);
+			fprintf(fpTendrilsC, "%d\n", i);
 			break;
 		case DISCONNECTED:
-			fprintf(fpDisconnected, "%d\n", i + 1);
+			fprintf(fpDisconnected, "%d\n", i);
 			break;
 		}
 	}
@@ -179,3 +202,82 @@ void WebClassifier::print_components() {
 	fclose(fpTendrilsC);
 	fclose(fpDisconnected);
 }
+
+//void WebClassifier::export_dot(Graph &graph) {
+//	FILE *fp = fopen("test.dot", "w");
+//
+//	fprintf(fp, "digraph world {\n");
+//
+//	// SCC
+//	fprintf(fp, "subgraph clusterA {\n label = \"SCC\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == SCC)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	// IN
+//	fprintf(fp, "subgraph clusterB {\n label = \"IN\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == IN)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	// OUT
+//	fprintf(fp, "subgraph clusterC {\n label = \"OUT\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == OUT)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	// TENDRILS_A
+//	fprintf(fp, "subgraph clusterD {\n label = \"Tendrils_A\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == TENDRILS_A)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	// TENDRILS_B
+//	fprintf(fp, "subgraph clusterE {\n label = \"Tendrils_B\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == TENDRILS_B)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	// TENDRILS_C
+//	fprintf(fp, "subgraph clusterF {\n label = \"Tendrils_C\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == TENDRILS_C)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	// DISCONNECTED
+//	fprintf(fp, "subgraph clusterG {\n label = \"Disconnected\";");
+//	for (unsigned i = 0; i < nodesType.size(); i++) {
+//		if (nodesType[i] == DISCONNECTED)
+//			fprintf(fp, "%d;\n", i + 1);
+//	}
+//	fprintf(fp, "}\n");
+//
+//	for (int u = 0; u < graph.getSize(); u++) {
+//		list<int> adjList = graph.getAdjList(u);
+//		for (int v : adjList) {
+//			fprintf(fp, "%d -> %d;\n", u + 1, v + 1);
+//		}
+//	}
+//
+//	for (int u = 0; u < graph.getSize(); u++) {
+//		fprintf(fp,
+//				"%d [label=\"\",shape=circle,height=0.1,width=0.1,fontsize=1];\n",
+//				u + 1);
+//	}
+//
+//	fprintf(fp, "}\n");
+//
+//	fclose(fp);
+//}

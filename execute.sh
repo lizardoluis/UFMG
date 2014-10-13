@@ -1,2 +1,2 @@
 #!/bin/bash
-./main
+./tp2 $1

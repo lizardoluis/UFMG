@@ -8,10 +8,6 @@
 #ifndef TIMEPROFILER_H_
 #define TIMEPROFILER_H_
 
-#include <cstdio>
-#include <sys/resource.h>
-#include <sys/time.h>
-
 class TimeProfiler {
 private:
 	double startStamp;

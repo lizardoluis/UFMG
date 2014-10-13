@@ -7,16 +7,9 @@
 
 #include "Graph.h"
 
-#include <iostream>
-
 Graph::Graph() {
 	size = 0;
-	adjList.reserve(100);
-}
-
-Graph::Graph(int numNodes) {
-	this->size = numNodes;
-	adjList.resize(numNodes);
+	adjList.reserve(100000);
 }
 
 void Graph::insert(int u, int v) {
@@ -25,12 +18,13 @@ void Graph::insert(int u, int v) {
 
 	biggestNode = u > v ? u : v;
 
-	if (biggestNode > size) {
-		adjList.resize(biggestNode);
-		size = biggestNode;
+	if (biggestNode >= size) {
+		adjList.resize(biggestNode+1);
+		size = biggestNode+1;
 	}
 
-	adjList[u - 1].push_back(v - 1);
+	if (u != v)
+		adjList[u].push_back(v);
 }
 
 list<int> & Graph::getAdjList(int v) {
@@ -39,14 +33,4 @@ list<int> & Graph::getAdjList(int v) {
 
 int Graph::getSize() {
 	return size;
-}
-
-void Graph::print() {
-	for (int i = 0; i < size; i++) {
-		cout << i + 1 << ": ";
-		for (int j : adjList[i]) {
-			cout << j + 1 << " ";
-		}
-		cout << endl;
-	}
 }
