@@ -59,7 +59,7 @@ public:
 	/*
 	 * Export the components to the corresponding files.
 	 */
-	void export_components();
+	void export_components(Graph &graph);
 
 //	void export_dot(Graph &graph);
 

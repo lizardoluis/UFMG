@@ -29,7 +29,7 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 	 * DFS graph
 	 */
 	for (int i = 0; i < graph.getSize(); i++) {
-		if (!discovered[i]) {
+		if (!discovered[i] && graph.isVertex(i)) {
 			dfsStack.push(i);
 
 			while (!dfsStack.empty()) {
@@ -126,23 +126,20 @@ void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
 					if (nodesType[u] == DISCONNECTED) {
 						scc.push_back(u);
 						nodesType[u] = setType;
-					}
-					else if(setType == TENDRILS_A){
+					} else if (setType == TENDRILS_A) {
 						// Avoid the SCC or OUT nodes in the DFS of the undirected graph.
-						if(nodesType[u] == SCC || nodesType[u] == OUT){
+						if (nodesType[u] == SCC || nodesType[u] == OUT) {
 							continue;
-						}
-						else if(nodesType[u] == TENDRILS_B){
+						} else if (nodesType[u] == TENDRILS_B) {
 							nodesType[u] = TENDRILS_C;
 						}
-					}
-					else if(setType == TENDRILS_B){
+					} else if (setType == TENDRILS_B) {
 						// Avoid the SCC or IN nodes in the DFS of the undirected graph.
 						if (nodesType[u] == SCC || nodesType[u] == IN) {
 							continue;
 						}
 						// Classify it as Tendrils-C
-						else if (nodesType[u] == TENDRILS_A){
+						else if (nodesType[u] == TENDRILS_A) {
 							nodesType[u] = TENDRILS_C;
 						}
 					}
@@ -159,7 +156,7 @@ void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
 	nodesList = scc;
 }
 
-void WebClassifier::export_components() {
+void WebClassifier::export_components(Graph &graph) {
 	FILE *fpSCC = fopen(SCC_FILE, "w");
 	FILE *fpIn = fopen(IN_FILE, "w");
 	FILE *fpOut = fopen(OUT_FILE, "w");
@@ -168,31 +165,44 @@ void WebClassifier::export_components() {
 	FILE *fpTendrilsC = fopen(TENDRILS_C_FILE, "w");
 	FILE *fpDisconnected = fopen(DISCONNECTED_FILE, "w");
 
+	int cSCC=0, cIN=0, cOUT=0, cTENDRILS_A=0, cTENDRILS_B=0, cTENDRILS_C=0, cDISCONNECTED=0;
+
 	for (unsigned i = 0; i < nodesType.size(); i++) {
-		switch (nodesType[i]) {
-		case SCC:
-			fprintf(fpSCC, "%d\n", i);
-			break;
-		case IN:
-			fprintf(fpIn, "%d\n", i);
-			break;
-		case OUT:
-			fprintf(fpOut, "%d\n", i);
-			break;
-		case TENDRILS_A:
-			fprintf(fpTendrilsA, "%d\n", i);
-			break;
-		case TENDRILS_B:
-			fprintf(fpTendrilsB, "%d\n", i);
-			break;
-		case TENDRILS_C:
-			fprintf(fpTendrilsC, "%d\n", i);
-			break;
-		case DISCONNECTED:
-			fprintf(fpDisconnected, "%d\n", i);
-			break;
+		if (graph.isVertex(i)) {
+			switch (nodesType[i]) {
+			case SCC:
+				fprintf(fpSCC, "%d\n", i);
+				cSCC++;
+				break;
+			case IN:
+				fprintf(fpIn, "%d\n", i);
+				cIN++;
+				break;
+			case OUT:
+				fprintf(fpOut, "%d\n", i);
+				cOUT++;
+				break;
+			case TENDRILS_A:
+				fprintf(fpTendrilsA, "%d\n", i);
+				cTENDRILS_A++;
+				break;
+			case TENDRILS_B:
+				fprintf(fpTendrilsB, "%d\n", i);
+				cTENDRILS_B++;
+				break;
+			case TENDRILS_C:
+				fprintf(fpTendrilsC, "%d\n", i);
+				cTENDRILS_C++;
+				break;
+			case DISCONNECTED:
+				fprintf(fpDisconnected, "%d\n", i);
+				cDISCONNECTED++;
+				break;
+			}
 		}
 	}
+
+	printf("FileSize: %d %d %d %d %d %d %d\n", cSCC, cIN, cOUT, cTENDRILS_A, cTENDRILS_B, cTENDRILS_C, cDISCONNECTED);
 
 	fclose(fpSCC);
 	fclose(fpIn);

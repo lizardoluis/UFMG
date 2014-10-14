@@ -29,6 +29,12 @@ private:
 	 */
 	vector<list<int> > adjList;
 
+	/*
+	 * True if the vertex belong to the graph.
+	 * Used for special graphs that start from 0.
+	 */
+	vector<bool> vertex;
+
 public:
 
 	/*
@@ -51,6 +57,8 @@ public:
 	 * Returns the size of the graph.
 	 */
 	int getSize();
+
+	bool isVertex(int v);
 };
 
 #endif /* GRAPH_H_ */
