@@ -9,8 +9,8 @@
 
 Graph::Graph() {
 	size = 0;
-	adjList.reserve(100000);
-	vertex.reserve(100000);
+	adjList.reserve(40000000);
+	vertex.reserve(4000000);
 }
 
 void Graph::insert(int u, int v) {

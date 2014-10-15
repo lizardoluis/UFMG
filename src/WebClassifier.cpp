@@ -11,13 +11,14 @@
 #include <queue>
 #include <stack>
 
+#include "TimeProfiler.h"
+
 WebClassifier::WebClassifier(int webSize) {
 	nodesType.resize(webSize, DISCONNECTED);
 }
 
 int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 
-	list<int> scc;
 	stack<int> S, dfsStack;
 	vector<bool> discovered(graph.getSize(), false);
 
@@ -59,10 +60,10 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 	 * these vertices from the graph G and the stack S.
 	 */
 	vector<bool> visited(graphT.getSize(), false);
+	vector<list<int>> scc(S.size());
+	int curr=0, giant=0, giantSize=0, currSize=0;
 
 	while (!S.empty()) {
-
-		list<int> component;
 
 		int w = S.top();
 		S.pop();
@@ -79,7 +80,8 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 
 				if (!visited[u]) {
 					visited[u] = true;
-					component.push_back(u);
+					scc[curr].push_back(u);
+					currSize++;
 
 					list<int> adjList = graphT.getAdjList(u);
 					for (int v : adjList) {
@@ -88,25 +90,27 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 				}
 			}
 
-			if (component.size() > scc.size()) {
-				scc = component;
+			if (currSize > giantSize) {
+				giant = curr;
+				giantSize = currSize;
 			}
 		}
+		curr++;
+		currSize=0;
 	}
 
 	// Set the nodes type to SCC
-	for (int i : scc) {
+	for (int i : scc[giant]) {
 		nodesType[i] = SCC;
 	}
 
 	// Returns one node of the SCC
-	return scc.front();
+	return scc[giant].front();
 }
 
 void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
 		list<int> &nodesList, Type setType) {
 
-	list<int> scc;
 	stack<int> nStack;
 	vector<bool> visited(graph.getSize(), false);
 
@@ -124,7 +128,7 @@ void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
 
 					// if node is not classified, classify it as setType
 					if (nodesType[u] == DISCONNECTED) {
-						scc.push_back(u);
+						nodesList.push_back(u);
 						nodesType[u] = setType;
 					} else if (setType == TENDRILS_A) {
 						// Avoid the SCC or OUT nodes in the DFS of the undirected graph.
@@ -152,8 +156,6 @@ void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
 			}
 		}
 	}
-
-	nodesList = scc;
 }
 
 void WebClassifier::export_components(Graph &graph) {

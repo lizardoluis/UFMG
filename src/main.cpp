@@ -19,7 +19,8 @@
 
 using namespace std;
 
-void read_input(string fileName, Graph &graph, Graph &graphT, Graph &undirectedGraph) {
+void read_input(string fileName, Graph &graph, Graph &graphT,
+		Graph &undirectedGraph) {
 	FILE *fp = fopen(fileName.c_str(), "r");
 	if (fp == NULL) {
 		printf("Error when opening the input file.");
@@ -30,8 +31,11 @@ void read_input(string fileName, Graph &graph, Graph &graphT, Graph &undirectedG
 
 	// Read the list of nodes in the file and add them to the graph
 	char buff[BUFFSZ];
+
 	while (fgets(buff, BUFFSZ, fp)) {
+
 		if (buff[0] != '#') {
+
 			sscanf(buff, "%d %d", &u, &v);
 
 			// Normal graph
@@ -81,18 +85,20 @@ int main(int argc, char *argv[]) {
 	time2.start();
 	web.classify_nodes(graph, sccList, out, WebClassifier::OUT);
 	tOUT = time2.reportTime();
-
-	// Classify IN nodes
+//
+//	// Classify IN nodes
 	time2.start();
 	web.classify_nodes(graphT, sccList, in, WebClassifier::IN);
 	tIN = time2.reportTime();
 
 	// Classify Tendrils_A
 	time2.start();
-	web.classify_nodes(undirectedGraph, in, tendrilsA, WebClassifier::TENDRILS_A);
+	web.classify_nodes(undirectedGraph, in, tendrilsA,
+			WebClassifier::TENDRILS_A);
 
 	// Classify Tendrils_B and Tendrils_C
-	web.classify_nodes(undirectedGraph, out, tendrilsB, WebClassifier::TENDRILS_B);
+	web.classify_nodes(undirectedGraph, out, tendrilsB,
+			WebClassifier::TENDRILS_B);
 	tTendrils = time2.reportTime();
 
 	// Export the components at the file
@@ -101,8 +107,8 @@ int main(int argc, char *argv[]) {
 	tOutput = time2.reportTime();
 
 //	printf("Execution Time: %g\n", time.reportTime());
-	printf("Execution Time: %.6g - %.6g %.6g %.6g %.6g %.6g %.6g\n\n", time.reportTime(), tInput, tSCC, tIN, tOUT, tTendrils, tOutput);
-
+	printf("Execution Time: %.6g - %.6g %.6g %.6g %.6g %.6g %.6g\n\n",
+			time.reportTime(), tInput, tSCC, tIN, tOUT, tTendrils, tOutput);
 
 	return 0;
 }
