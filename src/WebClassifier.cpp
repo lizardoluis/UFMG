@@ -17,7 +17,7 @@ WebClassifier::WebClassifier(int webSize) {
 	nodesType.resize(webSize, DISCONNECTED);
 }
 
-int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
+int WebClassifier::classify_scc(Graph &graph) {
 
 	stack<int> S, dfsStack;
 	vector<bool> discovered(graph.getSize(), false);
@@ -59,7 +59,7 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 	 * strongly connected component containing v; record this and remove all
 	 * these vertices from the graph G and the stack S.
 	 */
-	vector<bool> visited(graphT.getSize(), false);
+	vector<bool> visited(graph.getSize(), false);
 	vector<list<int>> scc(S.size());
 	int curr=0, giant=0, giantSize=0, currSize=0;
 
@@ -83,7 +83,7 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 					scc[curr].push_back(u);
 					currSize++;
 
-					list<int> adjList = graphT.getAdjList(u);
+					list<int> adjList = graph.getAdjListT(u);
 					for (int v : adjList) {
 						dfsStack.push(v);
 					}
@@ -105,7 +105,7 @@ int WebClassifier::classify_scc(Graph &graph, Graph &graphT) {
 	}
 
 	// Returns one node of the SCC
-	return scc[giant].front();
+	return scc[giant].back();
 }
 
 void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
@@ -148,7 +148,25 @@ void WebClassifier::classify_nodes(Graph &graph, list<int> &startNodes,
 						}
 					}
 
-					list<int> adjList = graph.getAdjList(u);
+
+					list<int> adjList;
+					switch (setType){
+					case IN:
+						adjList = graph.getAdjListT(u);
+						break;
+
+					case OUT:
+						adjList = graph.getAdjList(u);
+						break;
+
+					case TENDRILS_A:
+					case TENDRILS_B:
+						adjList = graph.getAdjList(u);
+						list<int> adjListT = graph.getAdjListT(u);
+						adjList.splice(adjList.end(), adjListT);
+						break;
+					}
+
 					for (int v : adjList) {
 						nStack.push(v);
 					}

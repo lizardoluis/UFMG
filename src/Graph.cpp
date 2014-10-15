@@ -21,12 +21,15 @@ void Graph::insert(int u, int v) {
 
 	if (biggestNode >= size) {
 		adjList.resize(biggestNode + 1);
+		adjListT.resize(biggestNode + 1);
 		size = biggestNode + 1;
 		vertex.resize(size);
 	}
 
-	if (u != v)
+	if (u != v){
 		adjList[u].push_back(v);
+		adjListT[v].push_back(u);
+	}
 
 	vertex[u] = true;
 	vertex[v] = true;
@@ -34,6 +37,10 @@ void Graph::insert(int u, int v) {
 
 list<int> & Graph::getAdjList(int v) {
 	return adjList[v];
+}
+
+list<int> & Graph::getAdjListT(int v) {
+	return adjListT[v];
 }
 
 int Graph::getSize() {

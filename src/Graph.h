@@ -30,6 +30,11 @@ private:
 	vector<list<int> > adjList;
 
 	/*
+	 * Transpose list.
+	 */
+	vector<list<int> > adjListT;
+
+	/*
 	 * True if the vertex belong to the graph.
 	 * Used for special graphs that start from 0.
 	 */
@@ -52,6 +57,8 @@ public:
 	 * Returns the reference to the adjacent list of the graph.
 	 */
 	list<int> & getAdjList(int v);
+
+	list<int> & getAdjListT(int v);
 
 	/*
 	 * Returns the size of the graph.

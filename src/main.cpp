@@ -19,53 +19,65 @@
 
 using namespace std;
 
-void read_input(string fileName, Graph &graph, Graph &graphT,
-		Graph &undirectedGraph) {
-	FILE *fp = fopen(fileName.c_str(), "r");
-	if (fp == NULL) {
-		printf("Error when opening the input file.");
-		exit(0);
-	}
+void read_input(Graph &graph) {
 
 	int u, v;
 
 	// Read the list of nodes in the file and add them to the graph
 	char buff[BUFFSZ];
 
-	while (fgets(buff, BUFFSZ, fp)) {
+	// Igonora os comentarios do inicio do arquivo
+	while (fgets(buff, BUFFSZ, stdin) && buff[0] == '#');
 
-		if (buff[0] != '#') {
+	sscanf(buff, "%d %d", &u, &v);
+	graph.insert(u, v);
 
-			sscanf(buff, "%d %d", &u, &v);
-
-			// Normal graph
-			graph.insert(u, v);
-
-			// Transpose graph
-			graphT.insert(v, u);
-
-			// Undirected-graph
-			undirectedGraph.insert(u, v);
-			undirectedGraph.insert(v, u);
-		}
+	// Le o restante do arquivo
+	while (scanf( "%d %d", &u, &v) == 2) {
+		graph.insert(u, v);
 	}
 
-	fclose(fp);
+//	fclose(fp);
 }
 
-int main(int argc, char *argv[]) {
+//void read_input(string fileName, Graph &graph) {
+//	FILE *fp = fopen(fileName.c_str(), "r");
+//	if (fp == NULL) {
+//		printf("Error when opening the input file.");
+//		exit(0);
+//	}
+//
+//	int u, v;
+//
+//	// Read the list of nodes in the file and add them to the graph
+//	char buff[BUFFSZ];
+//
+//	// Igonora os comentarios do inicio do arquivo
+//	while (fgets(buff, BUFFSZ, fp) && buff[0] == '#');
+//
+//	sscanf(buff, "%d %d", &u, &v);
+//	graph.insert(u, v);
+//
+//	// Le o restante do arquivo
+//	while (fscanf(fp, "%d %d", &u, &v) == 2) {
+//		graph.insert(u, v);
+//	}
+//
+//	fclose(fp);
+//}
+
+int main() {
 
 	double tInput, tSCC, tIN, tOUT, tTendrils, tOutput;
-	printf("%s\n", argv[1]);
 
 	TimeProfiler time, time2;
 	time.start();
 
 	// Read input file
-	Graph graph, graphT, undirectedGraph;
+	Graph graph;
 
 	time2.start();
-	read_input(argv[1], graph, graphT, undirectedGraph);
+	read_input(graph);
 	tInput = time2.reportTime();
 
 	WebClassifier web(graph.getSize());
@@ -76,7 +88,7 @@ int main(int argc, char *argv[]) {
 
 	// Classify SCC nodes and returns one node of the component
 	time2.start();
-	scc = web.classify_scc(graph, graphT);
+	scc = web.classify_scc(graph);
 	tSCC = time2.reportTime();
 
 	sccList.push_back(scc);
@@ -88,17 +100,15 @@ int main(int argc, char *argv[]) {
 //
 //	// Classify IN nodes
 	time2.start();
-	web.classify_nodes(graphT, sccList, in, WebClassifier::IN);
+	web.classify_nodes(graph, sccList, in, WebClassifier::IN);
 	tIN = time2.reportTime();
 
 	// Classify Tendrils_A
 	time2.start();
-	web.classify_nodes(undirectedGraph, in, tendrilsA,
-			WebClassifier::TENDRILS_A);
+	web.classify_nodes(graph, in, tendrilsA, WebClassifier::TENDRILS_A);
 
 	// Classify Tendrils_B and Tendrils_C
-	web.classify_nodes(undirectedGraph, out, tendrilsB,
-			WebClassifier::TENDRILS_B);
+	web.classify_nodes(graph, out, tendrilsB, WebClassifier::TENDRILS_B);
 	tTendrils = time2.reportTime();
 
 	// Export the components at the file

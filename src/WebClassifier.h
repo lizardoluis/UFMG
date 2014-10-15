@@ -44,7 +44,7 @@ public:
 	 *
 	 * @returns one node of the SCC.
 	 */
-	int classify_scc(Graph &graph, Graph &graphT);
+	int classify_scc(Graph &graph);
 
 	/*
 	 * DFS to classify the nodes of the graph accordingly to the type (setType) desired.
