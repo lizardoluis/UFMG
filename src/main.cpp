@@ -42,9 +42,12 @@ int processMsgBf(string msg, int index, int count, char last) {
 				b = processMsgBf(msg, i + 1, 1, CHAR0);
 			}
 
-			if (a == TRUE && b == FALSE) return BOTH;
-			else if (a == TRUE && b == TRUE) return TRUE;
-			else return FALSE;
+			if (a == TRUE && b == FALSE)
+				return BOTH;
+			else if (a == TRUE && b == TRUE)
+				return TRUE;
+			else
+				return FALSE;
 
 		} else if (msg[i] == last) {
 			count++;
@@ -61,24 +64,40 @@ int processMsgBf(string msg, int index, int count, char last) {
 	return FALSE;
 }
 
-int processMsgGa(string msg){
+int processMsgGa(string msg) {
 
-	int count=0;
-	char last="";
+	int count = 0;
+	char last = ' ';
 
-	for(unsigned i=0; i<msg.length(); i++){
+	for (unsigned i = 0; i < msg.length(); i++) {
 
-		if(msg[i] == last){
-			count ++;
-		}
-		else if(msg[i] == CHAR_){
-
-		}
-		else{
+		if (msg[i] == last) {
+			count++;
+		} else if (msg[i] == CHAR_) {
+			// Verifies if is better to make the undefined like the last,
+			// or to start counting again.
+			if (i < msg.length() - 1 && count < 4 && msg[i + 1] != CHAR_
+					&& msg[i + 1] != last) {
+				last = last == CHAR0 ? CHAR1 : CHAR0;
+				count = 1;
+			} else {
+				count++;
+			}
+		} else {
 			last = msg[i];
 			count = 1;
 		}
+
+		if ((last == CHAR0 && count == MIN0)
+				|| (last == CHAR1 && count == MIN1)) {
+			return TRUE;
+		}
 	}
+	return FALSE;
+}
+
+int processMsgPd(string msg){
+
 }
 
 int main() {
@@ -91,7 +110,8 @@ int main() {
 		string msg;
 		cin >> msg;
 
-		cout << processMsgBf(msg, 0, 0, ' ');
+		cout << processMsgBf(msg, 0, 0, ' ') << " "
+				<< processMsgBf(msg, 0, 0, ' ') << endl;
 	}
 
 	return 0;
