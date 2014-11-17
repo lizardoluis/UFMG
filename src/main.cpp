@@ -20,48 +20,38 @@ using namespace std;
 #define TRUE 1
 #define BOTH 2
 
-int processMsgBf(string msg, int index, int count, char last) {
+int bruteForce(string &msg, unsigned i, int c0, int c1) {
 
-	for (unsigned i = index; i < msg.length(); i++) {
+	while(true){
 
-		if ((last == CHAR0 && count == MIN0)
-				|| (last == CHAR1 && count == MIN1)) {
+		// stop conditions
+		if (c0 == 3 || c1 == 5)
 			return TRUE;
+		if (i == msg.length())
+			return FALSE;
+
+		if (msg[i] == '0') {
+			//bruteForce(msg, i + 1, c0 + 1, 0);
+			c0++;
+			i++;
+			c1 = 0;
 		}
+		else if (msg[i] == '1') {
+			//bruteForce(msg, i + 1, 0, c1 + 1);
+			c1++;
+			i++;
+			c0 = 0;
+		}
+		else {
+			int r0 = bruteForce(msg, i + 1, c0 + 1, 0);
+			int r1 = bruteForce(msg, i + 1, 0, c1 + 1);
 
-		if (msg[i] == CHAR_) {
-
-			int a, b;
-
-			if (last == CHAR0) {
-				a = processMsgBf(msg, i + 1, count + 1, CHAR0);
-				b = processMsgBf(msg, i + 1, 1, CHAR1);
-
-			} else {
-				a = processMsgBf(msg, i + 1, count + 1, CHAR1);
-				b = processMsgBf(msg, i + 1, 1, CHAR0);
-			}
-
-			if (a == TRUE && b == FALSE)
+			if (r0 != r1)
 				return BOTH;
-			else if (a == TRUE && b == TRUE)
-				return TRUE;
 			else
-				return FALSE;
-
-		} else if (msg[i] == last) {
-			count++;
-		} else {
-			count = 1;
-			last = msg[i];
+				return r0;
 		}
 	}
-
-	if ((last == CHAR0 && count == MIN0) || (last == CHAR1 && count == MIN1)) {
-		return TRUE;
-	}
-
-	return FALSE;
 }
 
 int processMsgGa(string msg) {
@@ -96,8 +86,36 @@ int processMsgGa(string msg) {
 	return FALSE;
 }
 
-int processMsgPd(string msg){
+int processMsgPdTD(string msg) {
 
+	int table[msg.length()][5][1];
+
+	for (int i = 0; i < msg.length(); i++)
+		for (int j = 0; j < 5; j++)
+			for (int k = 0; k < 5; k++)
+				table[i][j][k] = -1;
+
+	// stop conditions
+	if (c0 == 3 || c1 == 5)
+		return TRUE;
+	if (i == msg.length())
+		return FALSE;
+
+	if (msg[i] == '0') {
+		processMsgPdTD(msg, i + 1, c0 + 1, 0);
+	}
+	else if (msg[i] == '1') {
+		processMsgPdTD(msg, i + 1, 0, c1 + 1);
+	}
+	else {
+		int r0 = processMsgPdTD(msg, i + 1, c0 + 1, 0);
+		int r1 = processMsgPdTD(msg, i + 1, 0, c1 + 1);
+
+		if (r0 != r1)
+			return BOTH;
+		else
+			return r0;
+	}
 }
 
 int main() {
@@ -110,8 +128,8 @@ int main() {
 		string msg;
 		cin >> msg;
 
-		cout << processMsgBf(msg, 0, 0, ' ') << " "
-				<< processMsgBf(msg, 0, 0, ' ') << endl;
+		cout << " "
+				<< bruteForce(msg, 0, 0, 0) << endl;
 	}
 
 	return 0;
