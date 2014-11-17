@@ -5,19 +5,22 @@
  *      Author: lizardo
  */
 
-#include <iostream>
-using namespace std;
-
+#include <stdio.h>
+#include <string>
 #include "response.h"
 
+using namespace std;
+
 Response bruteForce(string &msg, unsigned i, int c0, int c1) {
+
+	int msgSize = msg.length();
 
 	while (true) {
 
 		// stop conditions
 		if (c0 == MIN0 || c1 == MIN1)
 			return TRUE;
-		if (i == msg.length())
+		if (i == msgSize)
 			break;
 
 		if (msg[i] == '0') {
@@ -46,19 +49,18 @@ Response bruteForce(string &msg, unsigned i, int c0, int c1) {
 	return FALSE;
 }
 
-Response bruteForce(string &msg){
+Response bruteForce(string msg){
 	return bruteForce(msg, 0, 0, 0);
 }
 
 int main() {
 
 	int numInstances;
+	int s = scanf("%d", &numInstances);
 
-	cin >> numInstances;
-
+	char msg[101];
 	for (int i = 0; i < numInstances; i++) {
-		string msg;
-		cin >> msg;
+		int s = scanf("%s", msg);
 
 		Response resp = bruteForce(msg);
 		printResponse(resp);

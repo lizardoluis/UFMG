@@ -10,10 +10,10 @@ using namespace std;
 
 #include "response.h"
 
-Response greedy(string &msg) {
+Response greedy(string msg) {
 
 	int count = 0;
-	char last = ' ';
+	char last = '0';
 	bool both = false;
 	Response resp = FALSE;
 
@@ -52,12 +52,11 @@ Response greedy(string &msg) {
 int main() {
 
 	int numInstances;
+	int s = scanf("%d", &numInstances);
 
-	cin >> numInstances;
-
+	char msg[101];
 	for (int i = 0; i < numInstances; i++) {
-		string msg;
-		cin >> msg;
+		int s = scanf("%s", msg);
 
 		Response resp = greedy(msg);
 		printResponse(resp);

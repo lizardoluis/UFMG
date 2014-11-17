@@ -4,20 +4,20 @@
  *  Created on: Nov 15, 2014
  *      Author: lizardo
  */
-
-#include <iostream>
-using namespace std;
-
+#include <stdio.h>
+#include <string>
 #include "response.h"
 
-#include <vector>
+using namespace std;
 
-Response topDown(string &msg, vector < vector<vector<Response> > > &table, unsigned i, int c0, int c1) {
+/*
+ * Top down implementation of the dynamic programming
+ */
+Response topDown(string &msg, Response table[][4][6], unsigned i, int c0, int c1) {
 
 	// stop conditions
 	if (c0 == MIN0 || c1 == MIN1)
 		return TRUE;
-
 	if (i == msg.length())
 		return FALSE;
 
@@ -55,20 +55,32 @@ Response topDown(string &msg, vector < vector<vector<Response> > > &table, unsig
 	return FALSE;
 }
 
-Response topDown(string &msg){
+Response topDown(string msg){
 
-	vector < vector<vector<Response> > > table(msg.length()+1, vector < vector<Response> > (MIN0+1, vector<Response>(MIN1+1, UNDEFINED)));
+	Response table[msg.length()+1][MIN0+1][MIN1+1];
+
+	for (int i = 0; i < msg.length() + 1; i++) {
+		for (int j = 0; j <= MIN0 + 1; j++) {
+			for (int k = 0; k < MIN1 + 1; k++) {
+				table[i][j][k] = UNDEFINED;
+			}
+		}
+	}
 
 	return topDown(msg, table, 0, 0, 0);
 }
 
 
 
-Response bottomUp(string &msg){
+/*
+ * Bottom-up implementation of the dynamic programming
+ */
+Response bottomUp(string msg){
 
-	vector < vector<vector<Response> > > table(msg.length()+1, vector < vector<Response> > (MIN0+1, vector<Response>(MIN1+1, UNDEFINED)));
 	int msgSize = msg.length();
+	Response table[msgSize+1][MIN0+1][MIN1+1];
 
+	// Initializes the table
 	for (int c0 = 0; c0 <= MIN0; c0++) {
 		for (int c1 = 0; c1 <= MIN1; c1++) {
 			if (c0 == MIN0 || c1 == MIN1)
@@ -78,11 +90,12 @@ Response bottomUp(string &msg){
 		}
 	}
 
-	for (int i = msg.length() - 1; i >= 0; i--) {
+	for (int i = msgSize - 1; i >= 0; i--) {
 
 		for (int c0 = 0; c0 <= MIN0; c0++) {
 			for (int c1 = 0; c1 <= MIN1; c1++) {
 
+				// Recurrence equation
 				if (c0 == MIN0 || c1 == MIN1) {
 					table[i][c0][c1] = TRUE;
 				} else if (msg[i] == '0') {
@@ -109,15 +122,14 @@ Response bottomUp(string &msg){
 int main() {
 
 	int numInstances;
+	int s = scanf("%d", &numInstances);
 
-	cin >> numInstances;
-
+	char msg[101];
 	for (int i = 0; i < numInstances; i++) {
-		string msg;
-		cin >> msg;
+		int s = scanf("%s", msg);
 
-//		Response resp = topDown(msg);
-		Response resp = bottomUp(msg);
+		Response resp = topDown(msg);
+//		Response resp = bottomUp(msg);
 		printResponse(resp);
 	}
 

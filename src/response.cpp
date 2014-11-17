@@ -7,20 +7,23 @@
 
 #include "response.h"
 
-#include <iostream>
+#include <stdio.h>
 
 using namespace std;
 
 void printResponse(Response r) {
 	switch (r) {
 	case TRUE:
-		cout << "true\n";
+		//cout << "true\n";
+		printf("true\n");
 		break;
 	case FALSE:
-		cout << "false\n";
+//		cout << "false\n";
+		printf("false\n");
 		break;
 	case BOTH:
-		cout << "both\n";
+//		cout << "both\n";
+		printf("both\n");
 		break;
 	}
 }
