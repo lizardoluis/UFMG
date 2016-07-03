@@ -1,8 +1,8 @@
-================TRABALHO PRÁTICO 1 DE INTRODUÇÃO A BIOINFORMÁTICA: Alinhamento de Sequências Proteicas=====================
+==TRABALHO PRÁTICO 1 DE INTRODUÇÃO A BIOINFORMÁTICA: Alinhamento de Sequências Proteicas==
 
 **
-Hugo Richard Amaral (hucharal@dcc.ufmg.br)
-Luís Eduardo Oliveira Lizardo (lizardo@dcc.ufmg.br)
+Hugo Richard Amaral
+Luís Eduardo Oliveira Lizardo
 
 **
 O Alinhamento de sequências possibilita comparar duas sequências e verificar a similaridade entre elas. Neste trabalho foi implementado um algoritmo de alinhamento de sequências para tentar identificar possíveis mutações em uma proteína. As analises foram feitas para a enzima triose-fosfato isomerase (TIM). O objetivo do trabalho é identificar as mutações que podem alterar a função proteica desta enzima e sugerir possíveis modificações que possam restaurar a função proteica desta enzima.
