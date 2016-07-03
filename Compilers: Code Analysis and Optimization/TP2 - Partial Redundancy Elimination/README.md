@@ -1,4 +1,4 @@
-* TP2: Partial Redundancy Elimination *
+# TP2: Partial Redundancy Elimination 
 
 - Lucas Duarte Prates
 - Luis Eduardo Oliveira Lizardo
