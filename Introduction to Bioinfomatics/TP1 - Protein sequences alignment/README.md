@@ -1,4 +1,4 @@
-==TRABALHO PRÁTICO 1 DE INTRODUÇÃO A BIOINFORMÁTICA: Alinhamento de Sequências Proteicas==
+# TP1: Alinhamento de Sequências Proteicas 
 
 **
 Hugo Richard Amaral
